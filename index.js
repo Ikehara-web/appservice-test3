@@ -4,18 +4,6 @@ const { DefaultAzureCredential } = require('@azure/identity');
 
 const port = process.env.PORT || 3000;
 
-// SQL接続設定（パスワードなし）
-const config = {
-  server: 'ikehara.database.windows.net',
-  database: 'free-sql-db-4004134 (ikehara/free-sql-db-4004134)',
-  options: {
-    encrypt: true
-  },
-  authentication: {
-    type: 'azure-active-directory-access-token'
-  }
-};
-
 async function getAccessToken() {
   const credential = new DefaultAzureCredential();
   const tokenResponse = await credential.getToken("https://database.windows.net/.default");
@@ -27,8 +15,17 @@ const server = http.createServer(async (req, res) => {
     const token = await getAccessToken();
 
     const pool = await sql.connect({
-      ...config,
-      accessToken: token
+      server: 'ikehara.database.windows.net',
+      database: 'free-sql-db-4004134 (ikehara/free-sql-db-4004134)',
+      options: {
+        encrypt: true
+      },
+      authentication: {
+        type: 'azure-active-directory-access-token',
+        options: {
+          token: token   // 🔥 ここが重要
+        }
+      }
     });
 
     const result = await pool.request().query('SELECT GETDATE() AS currentTime');
