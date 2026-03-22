@@ -1,8 +1,12 @@
 {
-  "name": "appservice-test3",
+  "name": "appservice-sql-mi",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
+  },
+  "dependencies": {
+    "mssql": "^10.0.0",
+    "@azure/identity": "^4.0.0"
   }
 }
