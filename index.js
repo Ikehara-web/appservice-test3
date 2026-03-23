@@ -1,11 +1,12 @@
 const http = require('http');
 const sql = require('mssql');
-const { DefaultAzureCredential } = require('@azure/identity');
+const { ManagedIdentityCredential } = require('@azure/identity');
 
 const port = process.env.PORT || 3000;
 
+const credential = new ManagedIdentityCredential();
+
 async function getAccessToken() {
-  const credential = new DefaultAzureCredential();
   const tokenResponse = await credential.getToken("https://database.windows.net/.default");
   return tokenResponse.token;
 }
@@ -23,7 +24,7 @@ const server = http.createServer(async (req, res) => {
       authentication: {
         type: 'azure-active-directory-access-token',
         options: {
-          token: token   // 🔥 ここが重要
+          token: token
         }
       }
     });
